@@ -1,0 +1,225 @@
+<html>
+<head>
+<title>Garden Designer</title>
+<link rel="icon" href="data:,">
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:#17201b;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#f6f3ea;
+}
+
+.render-view{
+    width:100vw;
+    height:100vh;
+}
+
+.controls{
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    width: min(330px, calc(100vw - 28px));
+    padding: 14px;
+    background: rgba(20, 28, 24, 0.86);
+    border: 1px solid rgba(255,255,255,0.16);
+    color: #f6f3ea;
+    font-size: 13px;
+    border-radius: 8px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 18px 38px rgba(0,0,0,0.24);
+}
+
+.controls h1{
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.panel-section{
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.14);
+}
+
+.row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:8px;
+}
+
+.row label{
+    flex: 0 0 92px;
+    color:#ddd8c9;
+}
+
+.value-readout{
+    width: 42px;
+    text-align:right;
+    color:#ffffff;
+    font-variant-numeric: tabular-nums;
+}
+
+.controls input[type="range"]{
+    flex: 1;
+    min-width: 0;
+    accent-color:#7dbb6d;
+}
+
+.tool-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:7px;
+}
+
+.tool-button,
+.command-button,
+.segmented button{
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.08);
+    color:#f6f3ea;
+    min-height:38px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+    transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.tool-button:hover,
+.command-button:hover,
+.segmented button:hover{
+    background:rgba(255,255,255,0.15);
+}
+
+.tool-button.active,
+.segmented button.active{
+    background:#7dbb6d;
+    border-color:#aee09e;
+    color:#152015;
+}
+
+.command-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px;
+    margin-top:10px;
+}
+
+.segmented{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:6px;
+    flex:1;
+}
+
+.status{
+    margin-top: 11px;
+    min-height: 34px;
+    padding: 9px 10px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    color:#fff7dc;
+    line-height: 1.25;
+}
+
+.status.bad{
+    color:#ffd7c9;
+}
+
+@media (max-width: 700px){
+    .controls{
+        top: 8px;
+        left: 8px;
+        width: calc(100vw - 16px);
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .controls h1{
+        font-size: 16px;
+    }
+
+    .tool-button,
+    .command-button,
+    .segmented button{
+        min-height: 34px;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="render-view"></div>
+
+<div class="controls">
+    <h1>Garden Designer</h1>
+
+    <div class="tool-grid" id="toolGrid">
+        <button class="tool-button active" data-tool="bench" aria-label="Bench">Bench</button>
+        <button class="tool-button" data-tool="tree" aria-label="Tree">Tree</button>
+        <button class="tool-button" data-tool="lamp" aria-label="Lamp">Lamp</button>
+        <button class="tool-button" data-tool="fence" aria-label="Fence">Fence</button>
+        <button class="tool-button" data-tool="flower" aria-label="Flower pot">Flower</button>
+        <button class="tool-button" data-tool="mushroom" aria-label="Mushroom">Mushroom</button>
+        <button class="tool-button" data-tool="roses" aria-label="Rose bed">Roses</button>
+        <button class="tool-button" data-tool="grass" aria-label="Grass clump">Grass</button>
+    </div>
+
+    <div class="command-row">
+        <button class="command-button" id="rotateButton" aria-label="Rotate selected model">Rotate</button>
+        <button class="command-button" id="cursorButton" aria-label="Cursor select tool">Cursor</button>
+    </div>
+
+    <div class="panel-section">
+        <div class="row">
+            <label for="plotWidth">Width</label>
+            <input id="plotWidth" type="range" min="12" max="34" step="1" value="22">
+            <span class="value-readout" id="plotWidthValue">22</span>
+        </div>
+        <div class="row">
+            <label for="plotDepth">Depth</label>
+            <input id="plotDepth" type="range" min="12" max="34" step="1" value="18">
+            <span class="value-readout" id="plotDepthValue">18</span>
+        </div>
+        <div class="row">
+            <label for="terrainLift">Terrain</label>
+            <input id="terrainLift" type="range" min="0" max="1.4" step="0.1" value="0.8">
+            <span class="value-readout" id="terrainLiftValue">0.8</span>
+        </div>
+        <div class="row">
+            <label for="sunStrength">Sun</label>
+            <input id="sunStrength" type="range" min="0" max="2" step="0.1" value="1.1">
+            <span class="value-readout" id="sunStrengthValue">1.1</span>
+        </div>
+        <div class="row">
+            <label>Light</label>
+            <div class="segmented" id="timeButtons">
+                <button class="active" data-time="day" aria-label="Day lighting">Day</button>
+                <button data-time="night" aria-label="Night lighting">Night</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="command-row">
+        <button class="command-button" id="scatterButton" aria-label="Random grass clumps">Random grass</button>
+        <button class="command-button" id="clearButton" aria-label="Clear garden">Clear</button>
+    </div>
+
+    <div class="status" id="statusText">Loading models...</div>
+</div>
+
+<script type="module" src="./main.js"></script>
+
+</body>
+</html>
